@@ -1,0 +1,7 @@
+{
+  "repository": "phananhson733-oss/nevermore",
+  "entries": [
+    { "package": "@sf/public-tools", "export": "./contract", "file": "packages/public-tools/src/contract.ts" },
+    { "package": "@sf/public-tools", "export": "./internal-link-audit", "file": "packages/public-tools/src/internal-link-audit/index.ts", "tests": "packages/public-tools/src/internal-link-audit" }
+  ]
+}

@@ -1,0 +1,1126 @@
+{
+ "contract_version": "pick-completion-v1",
+ "request": {
+  "domain": "candidates",
+  "scope": "candidate_pool",
+  "pin": null,
+  "query": null,
+  "source": null,
+  "source_id": null,
+  "language": null,
+  "theater": null,
+  "channel": null,
+  "account": null,
+  "published_from": null,
+  "published_to": null,
+  "exclude_posted": false,
+  "exclude_selected": false,
+  "confirmed_eligible_only": false,
+  "exclude_previous": false,
+  "hot_only": false,
+  "tags": [],
+  "signal_kind": null,
+  "period": {
+   "kind": "latest",
+   "value": null
+  },
+  "order": "evidence_date",
+  "offset": 0,
+  "limit": 24,
+  "budget_ms": 10000,
+  "posted_filter": "",
+  "posted_state": "",
+  "with_off": false,
+  "signal_only": false,
+  "wide": false,
+  "youtube_ok": false,
+  "dated_only": false,
+  "in_use_only": false,
+  "rank": null,
+  "grade": null,
+  "rs_sort": "rr",
+  "rs_locale": null,
+  "rs_bucket": null,
+  "legacy_week_label": null,
+  "result_id": null
+ },
+ "pin": {
+  "catalog_batch_id": "daf3150a0e34402bb26d681eb9472c02",
+  "mirror_version": null,
+  "knowledge_batch_id": null,
+  "rule_version": "pick-rules-v1",
+  "feedback_version_id": null
+ },
+ "actual_period": null,
+ "order_version": "evidence-date-v1",
+ "counts": {
+  "total": 24,
+  "matched": 22,
+  "returned": 22,
+  "excluded": {}
+ },
+ "truncated": false,
+ "next_offset": null,
+ "rows": [
+  {
+   "identity": "[\"synthetic\",\"syn-001\",\"es\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-001",
+    "language": "es",
+    "title": "Synthetic Drama 01",
+    "theater": "ShortMax",
+    "tags": [
+     "synthetic",
+     "romance"
+    ],
+    "listed_at": "2026-09-02",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/ShortMax/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 993,
+      "label": "ShortMax weekly",
+      "rank": 1,
+      "grade": "SS",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "allowed"
+    },
+    "detail_url": "https://example.invalid/drama/1",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/ShortMax/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-002\",\"ja\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-002",
+    "language": "ja",
+    "title": "Synthetic Drama 02",
+    "theater": "DramaBox",
+    "tags": [
+     "synthetic",
+     "ceo"
+    ],
+    "listed_at": "2026-09-03",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/DramaBox/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 986,
+      "label": "DramaBox weekly",
+      "rank": 2,
+      "grade": "S",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "denied"
+    },
+    "detail_url": "https://example.invalid/drama/2",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/DramaBox/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-003\",\"en\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-003",
+    "language": "en",
+    "title": "Synthetic Drama 03",
+    "theater": "KalosTV",
+    "tags": [
+     "synthetic",
+     "revenge"
+    ],
+    "listed_at": "2026-09-04",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/KalosTV/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 979,
+      "label": "KalosTV weekly",
+      "rank": 3,
+      "grade": "A",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "unknown"
+    },
+    "detail_url": "https://example.invalid/drama/3",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/KalosTV/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-004\",\"es\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-004",
+    "language": "es",
+    "title": "Synthetic Drama 04",
+    "theater": "ReelShort",
+    "tags": [
+     "synthetic",
+     "romance"
+    ],
+    "listed_at": "2026-09-05",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/ReelShort/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 972,
+      "label": "ReelShort weekly",
+      "rank": 4,
+      "grade": "B",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "allowed"
+    },
+    "detail_url": "https://example.invalid/drama/4",
+    "posted": {
+     "matched": true,
+     "records": [
+      "rec-4"
+     ],
+     "post_count": 1,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": [
+      "synthetic-account"
+     ]
+    }
+   },
+   "posted_status": "posted",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/ReelShort/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-005\",\"ja\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-005",
+    "language": "ja",
+    "title": "Synthetic Drama 05",
+    "theater": "ShortMax",
+    "tags": [
+     "synthetic",
+     "ceo"
+    ],
+    "listed_at": "2026-09-06",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/ShortMax/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 965,
+      "label": "ShortMax weekly",
+      "rank": 5,
+      "grade": "C",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "allowed"
+    },
+    "detail_url": "https://example.invalid/drama/5",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/ShortMax/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-006\",\"en\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-006",
+    "language": "en",
+    "title": "Synthetic Drama 06",
+    "theater": "DramaBox",
+    "tags": [
+     "synthetic",
+     "revenge"
+    ],
+    "listed_at": "2026-09-07",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/DramaBox/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 958,
+      "label": "DramaBox weekly",
+      "rank": 6,
+      "grade": "SSS",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "denied"
+    },
+    "detail_url": "https://example.invalid/drama/6",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/DramaBox/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-007\",\"es\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-007",
+    "language": "es",
+    "title": "Synthetic Drama 07",
+    "theater": "KalosTV",
+    "tags": [
+     "synthetic",
+     "romance"
+    ],
+    "listed_at": "2026-09-08",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/KalosTV/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 951,
+      "label": "KalosTV weekly",
+      "rank": 7,
+      "grade": "SS",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "unknown"
+    },
+    "detail_url": "https://example.invalid/drama/7",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/KalosTV/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-008\",\"ja\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-008",
+    "language": "ja",
+    "title": "Synthetic Drama 08",
+    "theater": "ReelShort",
+    "tags": [
+     "synthetic",
+     "ceo"
+    ],
+    "listed_at": "2026-09-09",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/ReelShort/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 944,
+      "label": "ReelShort weekly",
+      "rank": 8,
+      "grade": "S",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "allowed"
+    },
+    "detail_url": "https://example.invalid/drama/8",
+    "posted": {
+     "matched": true,
+     "records": [
+      "rec-8"
+     ],
+     "post_count": 1,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": [
+      "synthetic-account"
+     ]
+    }
+   },
+   "posted_status": "posted",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/ReelShort/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-009\",\"en\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-009",
+    "language": "en",
+    "title": "Synthetic Drama 09",
+    "theater": "ShortMax",
+    "tags": [
+     "synthetic",
+     "revenge"
+    ],
+    "listed_at": "2026-09-10",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/ShortMax/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 937,
+      "label": "ShortMax weekly",
+      "rank": 9,
+      "grade": "A",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "allowed"
+    },
+    "detail_url": "https://example.invalid/drama/9",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/ShortMax/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-010\",\"es\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-010",
+    "language": "es",
+    "title": "Synthetic Drama 10",
+    "theater": "DramaBox",
+    "tags": [
+     "synthetic",
+     "romance"
+    ],
+    "listed_at": "2026-09-11",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/DramaBox/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 930,
+      "label": "DramaBox weekly",
+      "rank": 10,
+      "grade": "B",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "denied"
+    },
+    "detail_url": "https://example.invalid/drama/10",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/DramaBox/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-012\",\"en\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-012",
+    "language": "en",
+    "title": "Synthetic Drama 12",
+    "theater": "ReelShort",
+    "tags": [
+     "synthetic",
+     "revenge"
+    ],
+    "listed_at": "2026-09-13",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/ReelShort/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 916,
+      "label": "ReelShort weekly",
+      "rank": 12,
+      "grade": "SSS",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "allowed"
+    },
+    "detail_url": "https://example.invalid/drama/12",
+    "posted": {
+     "matched": true,
+     "records": [
+      "rec-12"
+     ],
+     "post_count": 1,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": [
+      "synthetic-account"
+     ]
+    }
+   },
+   "posted_status": "posted",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/ReelShort/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-013\",\"es\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-013",
+    "language": "es",
+    "title": "Synthetic Drama 13",
+    "theater": "ShortMax",
+    "tags": [
+     "synthetic",
+     "romance"
+    ],
+    "listed_at": "2026-09-14",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/ShortMax/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 909,
+      "label": "ShortMax weekly",
+      "rank": 13,
+      "grade": "SS",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "allowed"
+    },
+    "detail_url": "https://example.invalid/drama/13",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/ShortMax/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-014\",\"ja\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-014",
+    "language": "ja",
+    "title": "Synthetic Drama 14",
+    "theater": "DramaBox",
+    "tags": [
+     "synthetic",
+     "ceo"
+    ],
+    "listed_at": "2026-09-15",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/DramaBox/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 902,
+      "label": "DramaBox weekly",
+      "rank": 14,
+      "grade": "S",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "denied"
+    },
+    "detail_url": "https://example.invalid/drama/14",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/DramaBox/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-015\",\"en\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-015",
+    "language": "en",
+    "title": "Synthetic Drama 15",
+    "theater": "KalosTV",
+    "tags": [
+     "synthetic",
+     "revenge"
+    ],
+    "listed_at": "2026-09-16",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/KalosTV/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 895,
+      "label": "KalosTV weekly",
+      "rank": 15,
+      "grade": "A",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "unknown"
+    },
+    "detail_url": "https://example.invalid/drama/15",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/KalosTV/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-016\",\"es\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-016",
+    "language": "es",
+    "title": "Synthetic Drama 16",
+    "theater": "ReelShort",
+    "tags": [
+     "synthetic",
+     "romance"
+    ],
+    "listed_at": "2026-09-17",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/ReelShort/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 888,
+      "label": "ReelShort weekly",
+      "rank": 16,
+      "grade": "B",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "allowed"
+    },
+    "detail_url": "https://example.invalid/drama/16",
+    "posted": {
+     "matched": true,
+     "records": [
+      "rec-16"
+     ],
+     "post_count": 1,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": [
+      "synthetic-account"
+     ]
+    }
+   },
+   "posted_status": "posted",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/ReelShort/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-017\",\"ja\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-017",
+    "language": "ja",
+    "title": "Synthetic Drama 17",
+    "theater": "ShortMax",
+    "tags": [
+     "synthetic",
+     "ceo"
+    ],
+    "listed_at": "2026-09-18",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/ShortMax/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 881,
+      "label": "ShortMax weekly",
+      "rank": 17,
+      "grade": "C",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "allowed"
+    },
+    "detail_url": "https://example.invalid/drama/17",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/ShortMax/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-018\",\"en\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-018",
+    "language": "en",
+    "title": "Synthetic Drama 18",
+    "theater": "DramaBox",
+    "tags": [
+     "synthetic",
+     "revenge"
+    ],
+    "listed_at": "2026-09-19",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/DramaBox/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 874,
+      "label": "DramaBox weekly",
+      "rank": 18,
+      "grade": "SSS",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "denied"
+    },
+    "detail_url": "https://example.invalid/drama/18",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/DramaBox/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-019\",\"es\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-019",
+    "language": "es",
+    "title": "Synthetic Drama 19",
+    "theater": "KalosTV",
+    "tags": [
+     "synthetic",
+     "romance"
+    ],
+    "listed_at": "2026-09-20",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/KalosTV/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 867,
+      "label": "KalosTV weekly",
+      "rank": 19,
+      "grade": "SS",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "unknown"
+    },
+    "detail_url": "https://example.invalid/drama/19",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/KalosTV/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-020\",\"ja\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-020",
+    "language": "ja",
+    "title": "Synthetic Drama 20",
+    "theater": "ReelShort",
+    "tags": [
+     "synthetic",
+     "ceo"
+    ],
+    "listed_at": "2026-09-21",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/ReelShort/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 860,
+      "label": "ReelShort weekly",
+      "rank": 20,
+      "grade": "S",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "allowed"
+    },
+    "detail_url": "https://example.invalid/drama/20",
+    "posted": {
+     "matched": true,
+     "records": [
+      "rec-20"
+     ],
+     "post_count": 1,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": [
+      "synthetic-account"
+     ]
+    }
+   },
+   "posted_status": "posted",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/ReelShort/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-021\",\"en\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-021",
+    "language": "en",
+    "title": "Synthetic Drama 21",
+    "theater": "ShortMax",
+    "tags": [
+     "synthetic",
+     "revenge"
+    ],
+    "listed_at": "2026-09-22",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/ShortMax/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 853,
+      "label": "ShortMax weekly",
+      "rank": 21,
+      "grade": "A",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "allowed"
+    },
+    "detail_url": "https://example.invalid/drama/21",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/ShortMax/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-023\",\"ja\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-023",
+    "language": "ja",
+    "title": "Synthetic Drama 23",
+    "theater": "KalosTV",
+    "tags": [
+     "synthetic",
+     "ceo"
+    ],
+    "listed_at": "2026-09-24",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/KalosTV/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 839,
+      "label": "KalosTV weekly",
+      "rank": 23,
+      "grade": "C",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "unknown"
+    },
+    "detail_url": "https://example.invalid/drama/23",
+    "posted": {
+     "matched": false,
+     "records": [],
+     "post_count": 0,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": []
+    }
+   },
+   "posted_status": "unknown",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/KalosTV/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  },
+  {
+   "identity": "[\"synthetic\",\"syn-024\",\"en\"]",
+   "drama": {
+    "source": "synthetic",
+    "source_id": "syn-024",
+    "language": "en",
+    "title": "Synthetic Drama 24",
+    "theater": "ReelShort",
+    "tags": [
+     "synthetic",
+     "revenge"
+    ],
+    "listed_at": "2026-09-25",
+    "availability": "active",
+    "signals": [
+     {
+      "kind": "rank",
+      "source_ref": "synthetic://rank/ReelShort/2026-10-06",
+      "observed_at": "2026-10-06",
+      "value": 832,
+      "label": "ReelShort weekly",
+      "rank": 24,
+      "grade": "SSS",
+      "note": "synthetic fixture"
+     }
+    ],
+    "channel_rules": {
+     "youtube": "allowed"
+    },
+    "detail_url": "https://example.invalid/drama/24",
+    "posted": {
+     "matched": true,
+     "records": [
+      "rec-24"
+     ],
+     "post_count": 1,
+     "sched_count": 0,
+     "last_post_on": null,
+     "accounts": [
+      "synthetic-account"
+     ]
+    }
+   },
+   "posted_status": "posted",
+   "posted_scope_complete": false,
+   "evidence_refs": [
+    "synthetic://rank/ReelShort/2026-10-06"
+   ],
+   "exclusion_reasons": []
+  }
+ ],
+ "board": null,
+ "facets": {
+  "language_order": [],
+  "platforms": {
+   "ShortMax": 6,
+   "DramaBox": 5,
+   "KalosTV": 5,
+   "ReelShort": 6
+  },
+  "languages": {
+   "es": 7,
+   "ja": 7,
+   "en": 8
+  },
+  "bases": {},
+  "posted": {},
+  "posted_states": {},
+  "ranks": {},
+  "grades": {}
+ },
+ "period_options": null,
+ "source_as_of": null,
+ "mirror_synced_at": null,
+ "warnings": []
+}

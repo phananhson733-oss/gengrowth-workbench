@@ -1,0 +1,14 @@
+node_modules/
+.dev/
+.next/
+.vercel/
+dist/
+*.tgz
+*.log
+.DS_Store
+# secrets never enter the repo; only *.example files are tracked
+.env
+.env.*
+!.env.example
+next-env.d.ts
+*.tsbuildinfo

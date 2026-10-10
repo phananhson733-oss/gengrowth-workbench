@@ -1,0 +1,5 @@
+- insert:
+    - id: gengrowth-workbench
+      name: gengrowth-workbench
+      config:
+        root: !!js dshHomePath('gengrowth-workbench')

@@ -1,0 +1,14 @@
+{
+  "name": "@sf/public-tools",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Vendored from phananhson733-oss/nevermore@c569f464 by scripts/vendor-nevermore.mjs. Do not edit.",
+  "type": "module",
+  "exports": {
+    "./contract": "./src/contract.ts",
+    "./internal-link-audit": "./src/internal-link-audit/index.ts"
+  },
+  "dependencies": {
+    "@sf/sources": "workspace:*"
+  }
+}

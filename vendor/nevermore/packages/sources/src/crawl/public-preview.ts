@@ -1,0 +1,429 @@
+/**
+ * The synchronous crawl profile shared by the anonymous public tools.
+ *
+ * These are transport safety boundaries, not account, pricing, or usage
+ * quotas. A server-owned ceiling may only tighten them; the HTTP caller cannot
+ * change them. A later asynchronous crawler can use a different execution
+ * profile without changing the public audit facts.
+ * A caller that needs evidence for the submitted page can opt into rejecting
+ * an entry redirect that replaces that page before the crawl transport exists.
+ */
+import { canonicalizeUrl } from "../canonical-url.ts";
+import { normalizeSiteOrigin } from "../origin.ts";
+import {
+  fetchPublicResource,
+  type PublicResourceFetchOptions,
+  type PublicResourceResult,
+} from "../public-http/index.ts";
+import {
+  crawlSite,
+  createDefaultCrawlFetcher,
+  CRAWL_ADDITIONAL_SEED_LIMIT,
+  type CrawlEngineOptions,
+  type CrawlPageProgress,
+} from "./engine.ts";
+import {
+  CRAWL_PROJECTION_LIMITS,
+  type CrawlBudget,
+  type CrawlFetcher,
+  type CrawlRaw,
+} from "./types.ts";
+
+export type { CrawlBudget, CrawlRaw } from "./types.ts";
+/**
+ * Re-exported so public tools can read a single collected page without
+ * importing the package barrel, which pulls the whole crawl engine into
+ * anything that touches it.
+ */
+export { CRAWL_PROJECTION_LIMITS } from "./types.ts";
+export type { CrawlPageProjection } from "../observations.ts";
+/**
+ * On-page facts collected beside the frozen `crawl.page.v1` projection. The
+ * public tools read them; nothing persists them.
+ */
+export type { ParsedOnPageFacts } from "./parse-page.ts";
+/**
+ * The parser itself, so a test can drive the real collectors over real HTML.
+ * Every payload guard in the public tools is written against what this emits.
+ */
+export { parsePage } from "./parse-page.ts";
+/**
+ * The ordered form of the same counting, plus the tables built from it.
+ *
+ * Exported so the audit's own unit counter can be held to it over a real
+ * corpus: the leaderboard's rows are divided by a total the other counter
+ * publishes, and two implementations that drift put one page's length beside
+ * another page's percentages.
+ */
+export {
+  buildTermFrequencyTables,
+  isCjkUnit,
+  TERM_TABLE_LIMITS,
+  unitStream,
+} from "./term-frequency.ts";
+export type {
+  TermFrequencyRow,
+  TermFrequencyTable,
+} from "./term-frequency.ts";
+
+export const PUBLIC_PREVIEW_CRAWL_USER_AGENT =
+  "GenGrowth-Public-Tools-Crawler/1.0 (+https://gengrowth.ai/tools)";
+
+/**
+ * Synchronous-function safety profile. The 240-second crawl budget leaves one
+ * minute of route-level headroom under the configured five-minute function
+ * duration for entry resolution, modelling, serialization, and error handling.
+ */
+export const PUBLIC_TOOL_SYNC_CRAWL_BUDGET: CrawlBudget = {
+  maxUrls: 2_000,
+  maxDepth: 6,
+  maxWallClockMs: 240_000,
+  maxRedirects: 5,
+  maxBodyBytes: 2 * 1024 * 1024,
+  maxTotalBytes: 128 * 1024 * 1024,
+  perHostConcurrency: 5,
+  minHostDelayMs: 250,
+};
+
+function validCrawlBudgetCeiling(
+  value: number | undefined,
+  allowZero = true,
+): number | undefined {
+  if (value === undefined || !Number.isFinite(value)) return undefined;
+  if (allowZero ? value < 0 : value <= 0) return undefined;
+  return value;
+}
+
+/** Apply a trusted server ceiling without ever widening the public profile. */
+export function tightenCrawlBudget(
+  ceiling: Partial<CrawlBudget> = {},
+): CrawlBudget {
+  return {
+    maxUrls: Math.min(
+      PUBLIC_TOOL_SYNC_CRAWL_BUDGET.maxUrls,
+      validCrawlBudgetCeiling(ceiling.maxUrls) ??
+        PUBLIC_TOOL_SYNC_CRAWL_BUDGET.maxUrls,
+    ),
+    maxDepth: Math.min(
+      PUBLIC_TOOL_SYNC_CRAWL_BUDGET.maxDepth,
+      validCrawlBudgetCeiling(ceiling.maxDepth) ??
+        PUBLIC_TOOL_SYNC_CRAWL_BUDGET.maxDepth,
+    ),
+    maxWallClockMs: Math.min(
+      PUBLIC_TOOL_SYNC_CRAWL_BUDGET.maxWallClockMs,
+      validCrawlBudgetCeiling(ceiling.maxWallClockMs) ??
+        PUBLIC_TOOL_SYNC_CRAWL_BUDGET.maxWallClockMs,
+    ),
+    maxRedirects: Math.min(
+      PUBLIC_TOOL_SYNC_CRAWL_BUDGET.maxRedirects,
+      validCrawlBudgetCeiling(ceiling.maxRedirects) ??
+        PUBLIC_TOOL_SYNC_CRAWL_BUDGET.maxRedirects,
+    ),
+    maxBodyBytes: Math.min(
+      PUBLIC_TOOL_SYNC_CRAWL_BUDGET.maxBodyBytes,
+      validCrawlBudgetCeiling(ceiling.maxBodyBytes) ??
+        PUBLIC_TOOL_SYNC_CRAWL_BUDGET.maxBodyBytes,
+    ),
+    maxTotalBytes: Math.min(
+      PUBLIC_TOOL_SYNC_CRAWL_BUDGET.maxTotalBytes,
+      validCrawlBudgetCeiling(ceiling.maxTotalBytes) ??
+        PUBLIC_TOOL_SYNC_CRAWL_BUDGET.maxTotalBytes,
+    ),
+    perHostConcurrency: Math.min(
+      PUBLIC_TOOL_SYNC_CRAWL_BUDGET.perHostConcurrency,
+      validCrawlBudgetCeiling(ceiling.perHostConcurrency, false) ??
+        PUBLIC_TOOL_SYNC_CRAWL_BUDGET.perHostConcurrency,
+    ),
+    minHostDelayMs: Math.max(
+      PUBLIC_TOOL_SYNC_CRAWL_BUDGET.minHostDelayMs,
+      validCrawlBudgetCeiling(ceiling.minHostDelayMs) ??
+        PUBLIC_TOOL_SYNC_CRAWL_BUDGET.minHostDelayMs,
+    ),
+  };
+}
+
+/** Includes robots.txt, sitemap documents, pages, and every redirect hop. */
+export const PUBLIC_TOOL_SYNC_MAX_REQUESTS = 4_500;
+
+/** Compatibility aliases for existing internal consumers. */
+export const PUBLIC_PREVIEW_CRAWL_BUDGET = PUBLIC_TOOL_SYNC_CRAWL_BUDGET;
+export const PUBLIC_PREVIEW_MAX_REQUESTS = PUBLIC_TOOL_SYNC_MAX_REQUESTS;
+export const PUBLIC_PREVIEW_ADDITIONAL_SEED_LIMIT =
+  CRAWL_ADDITIONAL_SEED_LIMIT;
+
+export type PublicSiteEntryResolver = (
+  url: string,
+  options: PublicResourceFetchOptions,
+) => Promise<PublicResourceResult>;
+
+/** A canonical entry redirect replaced the page the caller asked to inspect. */
+export class PublicPreviewTargetRedirectError extends Error {
+  readonly targetUrl: string;
+
+  constructor(targetUrl: string) {
+    super("public_preview_target_redirected");
+    this.name = "PublicPreviewTargetRedirectError";
+    this.targetUrl = targetUrl;
+  }
+}
+
+export interface PublicPreviewCrawlOptions {
+  /** Offline test seam. Production must use the guarded default transport. */
+  readonly fetcher?: CrawlFetcher;
+  /** Offline test seam. API callers cannot supply engine options. */
+  readonly engineOptions?: Omit<
+    CrawlEngineOptions,
+    | "additionalSeedUrls"
+    | "budget"
+    | "deferSitemapFrontier"
+    | "maxRequests"
+  >;
+  /**
+   * Server-only ceiling; every supplied field may only tighten the fixed
+   * budget.
+   */
+  readonly budgetCeiling?: Partial<CrawlBudget>;
+  /** Trusted server-only manual pages; HTTP callers cannot set this directly. */
+  readonly additionalSeedUrls?: readonly string[];
+  /**
+   * Trusted server-only frontier policy. Sitemap documents are still fetched
+   * and projected before crawling pages; only their member enqueue is delayed.
+   */
+  readonly deferSitemapFrontier?: boolean;
+  /** Offline test seam for canonical entry resolution. */
+  readonly entryResolver?: PublicSiteEntryResolver;
+  /** Opt in to rejecting an entry redirect to a different canonical page. */
+  readonly requireSameEntrySubject?: boolean;
+  /**
+   * Production door for the engine's collected-page count, separate from
+   * `engineOptions` because that seam is offline-only. Observation cannot
+   * change the budget, the pacing, or what is fetched.
+   */
+  readonly onPageProgress?: (progress: CrawlPageProgress) => void;
+  /**
+   * Production door for the running wire-request count, for the same reason
+   * `onPageProgress` has one. Counting requests from outside would mean handing
+   * in a transport through `fetcher`, and that seam is offline-only precisely
+   * so the shipped crawl is always the guarded default transport. The count
+   * covers robots.txt, every sitemap document, every page fetch and every
+   * redirect hop, and is reported before the request is issued.
+   */
+  readonly onRequestSent?: (requestsSent: number) => void;
+}
+
+/**
+ * Count wire requests without changing the transport that makes them.
+ *
+ * The engine runs the SSRF guard and builds the pinned dispatcher before
+ * calling the fetcher, and passes both on `init`; this wrapper forwards that
+ * object by reference, so the guarded transport is still the transport.
+ */
+export function countingCrawlFetcher(
+  inner: CrawlFetcher,
+  onRequest: (requestsSent: number) => void,
+): CrawlFetcher {
+  let requestsSent = 0;
+  return {
+    fetch(url, init) {
+      requestsSent += 1;
+      try {
+        onRequest(requestsSent);
+      } catch {
+        // Observation must never end a crawl.
+      }
+      return inner.fetch(url, init);
+    },
+  };
+}
+
+function withoutWww(hostname: string): string {
+  return hostname.startsWith("www.") ? hostname.slice(4) : hostname;
+}
+
+function resolvedAdditionalSeedUrls(
+  submitted: URL,
+  resolvedSeed: URL,
+  values: readonly string[],
+): readonly string[] {
+  const seeds = new Set<string>();
+  for (const value of values) {
+    if (
+      typeof value !== "string" ||
+      value.length === 0 ||
+      value.length > CRAWL_PROJECTION_LIMITS.maxUrlChars ||
+      value.includes("#")
+    ) {
+      throw new Error("public_preview_additional_seed_invalid");
+    }
+    let parsed: URL;
+    try {
+      parsed = new URL(value);
+    } catch {
+      throw new Error("public_preview_additional_seed_invalid");
+    }
+    if (
+      !isAllowedPublicToolEntryRedirect(submitted.toString(), parsed.toString()) ||
+      parsed.username !== "" ||
+      parsed.password !== "" ||
+      parsed.hash !== ""
+    ) {
+      throw new Error("public_preview_additional_seed_invalid");
+    }
+    const rebased = canonicalizeUrl(
+      `${resolvedSeed.origin}${parsed.pathname}${parsed.search}`,
+    );
+    if (!rebased || new URL(rebased.fetchUrl).origin !== resolvedSeed.origin) {
+      throw new Error("public_preview_additional_seed_invalid");
+    }
+    seeds.add(rebased.fetchUrl);
+  }
+  return [...seeds]
+    .sort((left, right) => (left < right ? -1 : left > right ? 1 : 0))
+    .slice(0, PUBLIC_PREVIEW_ADDITIONAL_SEED_LIMIT);
+}
+
+/**
+ * Admit only a same-host or apex/www canonical entry transition. HTTPS may
+ * never downgrade. This intentionally does not use a suffix or registrable
+ * domain heuristic, so sibling subdomains and look-alike domains stay blocked.
+ */
+export function isAllowedPublicToolEntryRedirect(
+  submittedUrl: string,
+  candidateUrl: string,
+): boolean {
+  let submitted: URL;
+  let candidate: URL;
+  try {
+    submitted = new URL(submittedUrl);
+    candidate = new URL(candidateUrl);
+  } catch {
+    return false;
+  }
+
+  if (
+    (candidate.protocol !== "http:" && candidate.protocol !== "https:") ||
+    (submitted.protocol === "https:" && candidate.protocol !== "https:")
+  ) {
+    return false;
+  }
+
+  const submittedHost = submitted.hostname.toLowerCase();
+  const candidateHost = candidate.hostname.toLowerCase();
+  if (withoutWww(submittedHost) !== withoutWww(candidateHost)) return false;
+
+  return (
+    submittedHost === candidateHost ||
+    submittedHost === `www.${candidateHost}` ||
+    candidateHost === `www.${submittedHost}`
+  );
+}
+
+export async function crawlPublicSitePreview(
+  inputUrl: string,
+  signal?: AbortSignal,
+  options: PublicPreviewCrawlOptions = {},
+): Promise<CrawlRaw> {
+  let submitted: URL;
+  try {
+    submitted = new URL(inputUrl);
+  } catch {
+    throw new Error("public_preview_requires_normalized_origin");
+  }
+  if (submitted.username || submitted.password) {
+    throw new Error("public_preview_requires_normalized_origin");
+  }
+  submitted.hash = "";
+  const entryResolver = options.entryResolver ?? fetchPublicResource;
+  const entry = await entryResolver(submitted.toString(), {
+    timeoutMs: 15_000,
+    maxRedirects: PUBLIC_TOOL_SYNC_CRAWL_BUDGET.maxRedirects,
+    maxBodyBytes: 1,
+    userAgent: PUBLIC_PREVIEW_CRAWL_USER_AGENT,
+    allowRedirect: (_fromUrl, toUrl) =>
+      isAllowedPublicToolEntryRedirect(submitted.toString(), toUrl),
+  });
+  if (
+    entry.kind === "error" &&
+    (entry.code === "blocked" ||
+      entry.code === "cross_origin" ||
+      entry.code === "invalid_redirect" ||
+      entry.code === "redirect_limit")
+  ) {
+    throw new Error("public_preview_entry_blocked");
+  }
+  const seedUrl = entry.kind === "ok" ? entry.finalUrl : submitted.toString();
+  if (!isAllowedPublicToolEntryRedirect(submitted.toString(), seedUrl)) {
+    throw new Error("public_preview_entry_blocked");
+  }
+  const rawResolvedSeed = new URL(seedUrl);
+  if (rawResolvedSeed.username || rawResolvedSeed.password) {
+    throw new Error("public_preview_requires_normalized_origin");
+  }
+  const canonicalEntry = canonicalizeUrl(rawResolvedSeed.toString());
+  if (!canonicalEntry) {
+    throw new Error("public_preview_requires_normalized_origin");
+  }
+  const resolvedSeed = new URL(canonicalEntry.fetchUrl);
+  if (options.requireSameEntrySubject) {
+    const rebasedSubmitted = canonicalizeUrl(
+      `${resolvedSeed.origin}${submitted.pathname}${submitted.search}`,
+    );
+    if (!rebasedSubmitted) {
+      throw new Error("public_preview_requires_normalized_origin");
+    }
+    if (rebasedSubmitted.subjectUrl !== canonicalEntry.subjectUrl) {
+      throw new PublicPreviewTargetRedirectError(canonicalEntry.fetchUrl);
+    }
+  }
+  const normalized = normalizeSiteOrigin(`${resolvedSeed.origin}/`);
+  if (!normalized) {
+    throw new Error("public_preview_requires_normalized_origin");
+  }
+  const additionalSeedUrls = resolvedAdditionalSeedUrls(
+    submitted,
+    resolvedSeed,
+    options.additionalSeedUrls ?? [],
+  );
+
+  // The default is built here, not by the caller, so an observed crawl and an
+  // unobserved one issue their requests through the same guarded transport.
+  const transport =
+    options.fetcher ??
+    createDefaultCrawlFetcher(PUBLIC_PREVIEW_CRAWL_USER_AGENT);
+
+  return crawlSite(
+    {
+      origin: normalized.origin,
+      host: normalized.host,
+      seedUrl: resolvedSeed.toString(),
+    },
+    { userAgent: PUBLIC_PREVIEW_CRAWL_USER_AGENT },
+    // The engine requires adapter identity, but a public preview neither reads
+    // nor persists any tenant/run state. Only cancellation is meaningful here.
+    {
+      workspaceId: "public-preview",
+      projectId: "public-preview",
+      siteId: "public-preview",
+      runId: "public-preview",
+      ...(signal ? { signal } : {}),
+    },
+    options.onRequestSent
+      ? countingCrawlFetcher(transport, options.onRequestSent)
+      : transport,
+    {
+      ...options.engineOptions,
+      // Present only when a listener exists: an explicit undefined is a
+      // different type under exactOptionalPropertyTypes.
+      ...(options.onPageProgress
+        ? { onPageProgress: options.onPageProgress }
+        : {}),
+      budget: tightenCrawlBudget(options.budgetCeiling),
+      maxRequests: PUBLIC_TOOL_SYNC_MAX_REQUESTS,
+      // Always overwrite server-owned frontier controls after the offline
+      // seam. Runtime callers do not get to bypass the public normalization
+      // boundary with a cast or an untyped object.
+      additionalSeedUrls,
+      deferSitemapFrontier: options.deferSitemapFrontier === true,
+    },
+  );
+}

@@ -1,0 +1,24 @@
+{
+  "name": "@gg/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "GenGrowth workbench API: runs the SEO/GEO engines for the DSH plugin.",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1 --port 3210",
+    "build": "next build",
+    "start": "next start --hostname 127.0.0.1 --port 3210",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sf/public-tools": "workspace:*",
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "typescript": "catalog:"
+  }
+}

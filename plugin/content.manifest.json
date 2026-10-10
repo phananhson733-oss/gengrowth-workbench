@@ -1,0 +1,350 @@
+{
+  "source": {
+    "repository": "phananhson733-oss/nevermore",
+    "commit": "c569f464f7073b374d14190a72803373061e5d72",
+    "locale": "en"
+  },
+  "entries": [
+    {
+      "kind": "skill",
+      "name": "content-brief",
+      "description": "Turn a target query into a brief a writer can act on, carrying the claim the page makes, the first-hand evidence to gather, and what the page must not say. Use when someone asks for a content brief, an outline, or what a page should say before writing starts — including when they hand over a keyword and expect a draft, since the brief is what stops the draft from being generic.",
+      "file": "skills/content-brief/SKILL.md",
+      "chars": 4108,
+      "sha256": "8e66425e26c4fbc1f161e9cff8ad43e49af026361b19c2c95817ea22fc11ecc0",
+      "sourcePath": "apps/marketing/content/skills/en/content-brief.md"
+    },
+    {
+      "kind": "skill",
+      "name": "content-refresh",
+      "description": "Decide which existing pages to update, rewrite, retarget, or leave alone, by naming the cause of each decline before naming the fix. Use when traffic to existing pages has fallen, when someone asks which posts to update, consolidate, or delete, or when they propose refreshing a page without having established why it declined.",
+      "file": "skills/content-refresh/SKILL.md",
+      "chars": 4880,
+      "sha256": "6a4885b4e6e8f167fbc9b211dadadd52dc3558a073248fa6655fc81372f919ef",
+      "sourcePath": "apps/marketing/content/skills/en/content-refresh.md"
+    },
+    {
+      "kind": "skill",
+      "name": "geo-ai-visibility",
+      "description": "Measure where AI assistants source answers on a topic, fix retrieval blockers on the site, and identify the off-site references that citation depends on. Use when someone asks why ChatGPT, Claude, Perplexity, or Google's AI Overviews cite a competitor instead of them, wants to track brand mentions in AI answers, or asks how to optimise for AI search or GEO — including the bare \"we don't show up in AI\" with nothing else supplied.",
+      "file": "skills/geo-ai-visibility/SKILL.md",
+      "chars": 4496,
+      "sha256": "f05c8e939b71912066bc89fd0e25e6c056717f683b3f15e19b174cdbf219308e",
+      "sourcePath": "apps/marketing/content/skills/en/geo-ai-visibility.md"
+    },
+    {
+      "kind": "skill",
+      "name": "internal-linking",
+      "description": "Audit a site's internal link graph and decide, per page, whether to link, merge, retire, or leave it alone — with the evidence for each verdict attached. Use when someone asks about internal links, orphan pages, site structure, anchor text, or link equity, and when a site has indexed pages that get no traffic and nobody has decided which of them deserve the links.",
+      "file": "skills/internal-linking/SKILL.md",
+      "chars": 4790,
+      "sha256": "3856a1d1b532b2875d9a94f2cfdbb2135f1641f23f39c19a2627668b4874a962",
+      "sourcePath": "apps/marketing/content/skills/en/internal-linking.md"
+    },
+    {
+      "kind": "skill",
+      "name": "keyword-research",
+      "description": "Build a keyword set for a site from measured demand and observed competitors, keeping unavailable data explicitly unavailable. Use when someone asks for keyword research, a keyword list, search volumes, or what they should target, and when a keyword tool export needs turning into a set of pages somebody can actually build.",
+      "file": "skills/keyword-research/SKILL.md",
+      "chars": 3392,
+      "sha256": "4f5129f74fa65d380dad0797aea01dcef72cebd80c48a49f96edfa451a252860",
+      "sourcePath": "apps/marketing/content/skills/en/keyword-research.md"
+    },
+    {
+      "kind": "skill",
+      "name": "on-page-seo",
+      "description": "Revise a single page so its title, outline, naming, markup, and links all state the same thing, using only what the delivered page and its measured data show. Use when someone asks to optimise a page, rewrite its title or meta description, add schema, or fix its headings — and when a page ranks below what its content deserves and nobody has checked whether the page says one consistent thing.",
+      "file": "skills/on-page-seo/SKILL.md",
+      "chars": 4275,
+      "sha256": "4b8a4c21142b33c82b1872014a196874915c39c1b4b58624845b2e70e07fabe9",
+      "sourcePath": "apps/marketing/content/skills/en/on-page-seo.md"
+    },
+    {
+      "kind": "skill",
+      "name": "seo-audit",
+      "description": "Diagnose one site at one point in time, ordering findings by stated severity rules and marking every check that could not be run as unchecked. Use when someone asks for an SEO audit, a site health check, or what is wrong with their site, including when they supply only a domain and expect findings ordered by what to fix first.",
+      "file": "skills/seo-audit/SKILL.md",
+      "chars": 4417,
+      "sha256": "2ae4dd08c655385ac6a97d5da3fd8db95f2e7b6e5aa36aa8980b94be3cc6eb86",
+      "sourcePath": "apps/marketing/content/skills/en/seo-audit.md"
+    },
+    {
+      "kind": "skill",
+      "name": "technical-seo-checklist",
+      "description": "Explain why specific URLs are missing from the index, separating blocked from undiscovered from deliberately excluded, using observed responses only. Use when pages are missing from Google, when someone asks about indexing, crawl budget, robots.txt, canonicals, or sitemaps, or when Search Console reports a URL as discovered but not indexed and the cause has not been established.",
+      "file": "skills/technical-seo-checklist/SKILL.md",
+      "chars": 4546,
+      "sha256": "3bdfb1d842ae4373680b75bf07044b0d1539dedb93b1c7f547046e7531ab9494",
+      "sourcePath": "apps/marketing/content/skills/en/technical-seo-checklist.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "comparison-page-copy-prompt",
+      "description": "Write an X vs Y comparison page from dated, observed competitor facts, including the cases where the competitor is the better choice and a ledger of what could not be verified.",
+      "relatedSkill": "content-brief",
+      "variables": [
+        "our_product",
+        "our_facts",
+        "competitor_facts",
+        "buyer_context",
+        "page_constraints"
+      ],
+      "file": "prompts/comparison-page-copy-prompt/SKILL.md",
+      "chars": 7009,
+      "sha256": "259ae287973b79ebd8a53c85974a470e3228d091502048bee8fd831001c809a1",
+      "sourcePath": "apps/marketing/content/prompts/en/comparison-page-copy-prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "content-refresh-rewrite-prompt",
+      "description": "Decide what to change on a page that has lost or never gained traffic - one diagnosis, the change list it implies, and an explicit list of what to leave alone.",
+      "relatedSkill": "content-refresh",
+      "variables": [
+        "page_text",
+        "target_query",
+        "performance_history",
+        "serp_snapshot",
+        "change_constraints"
+      ],
+      "file": "prompts/content-refresh-rewrite-prompt/SKILL.md",
+      "chars": 6481,
+      "sha256": "0f5135338ae6834392c80df0c23628190eb4d7a89181d62d5ba84bffc219f539",
+      "sourcePath": "apps/marketing/content/prompts/en/content-refresh-rewrite-prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "faq-generation-schema-prompt",
+      "description": "Draft an FAQ section from questions readers have actually been recorded asking, plus FAQPage JSON-LD whose answers match the visible text word for word.",
+      "relatedSkill": "on-page-seo",
+      "variables": [
+        "page_url",
+        "page_summary",
+        "reader_questions",
+        "existing_faq",
+        "answer_constraints"
+      ],
+      "file": "prompts/faq-generation-schema-prompt/SKILL.md",
+      "chars": 6177,
+      "sha256": "83fa30a0269ab595b732614ebd9fb9953fd0c4afa0db4ada03ff6a0a6307c013",
+      "sourcePath": "apps/marketing/content/prompts/en/faq-generation-schema-prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "geo-ai-overview-optimization-prompt",
+      "description": "Rewrite a page passage by passage so an assistant can quote a correct, self-contained answer from it, plus a straight read on whether page edits alone can change anything.",
+      "relatedSkill": "geo-ai-visibility",
+      "variables": [
+        "target_page",
+        "page_content",
+        "target_questions",
+        "offsite_presence",
+        "verified_facts"
+      ],
+      "file": "prompts/geo-ai-overview-optimization-prompt/SKILL.md",
+      "chars": 6379,
+      "sha256": "b361a7247a930eb3fa7b898a85c0eaa484fcfc39c1f8880b6c6d95abf47b243b",
+      "sourcePath": "apps/marketing/content/prompts/en/geo-ai-overview-optimization-prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "humanize-ai-content-prompt",
+      "description": "Edit an AI first draft into publishable prose by cutting throat-clearing and machine rhythm, and flagging every claim that needs a fact instead of inventing one.",
+      "relatedSkill": "content-brief",
+      "variables": [
+        "draft_text",
+        "page_context",
+        "verified_facts",
+        "voice_sample",
+        "locked_elements"
+      ],
+      "file": "prompts/humanize-ai-content-prompt/SKILL.md",
+      "chars": 5984,
+      "sha256": "5efcf441702419511e838472fa62a5d49c9d697f9ef37d13ffe35830eef35844",
+      "sourcePath": "apps/marketing/content/prompts/en/humanize-ai-content-prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "internal-linking-suggestions-prompt",
+      "description": "Produce an internal link plan for one page: anchor text, the sentence each link belongs in, and a flag for any pages that overlap so heavily they should be merged instead.",
+      "relatedSkill": "internal-linking",
+      "variables": [
+        "target_page",
+        "candidate_pages",
+        "reader_context",
+        "existing_links",
+        "link_budget"
+      ],
+      "file": "prompts/internal-linking-suggestions-prompt/SKILL.md",
+      "chars": 6211,
+      "sha256": "a080a6179b3fe3935d407fb446c5822ebcdde87ee42c938f924c4d57e337b5b9",
+      "sourcePath": "apps/marketing/content/prompts/en/internal-linking-suggestions-prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "landing-page-seo-copy-prompt",
+      "description": "Draft landing page copy that answers one search query in the first screen and then earns one action, using only the facts you supply.",
+      "relatedSkill": "on-page-seo",
+      "variables": [
+        "target_query",
+        "offer_facts",
+        "primary_action",
+        "proof_assets",
+        "copy_constraints"
+      ],
+      "file": "prompts/landing-page-seo-copy-prompt/SKILL.md",
+      "chars": 6273,
+      "sha256": "99ea64900b831e6a1a21fc3aa99536288cca98a908844df4082a1d7b2665e638",
+      "sourcePath": "apps/marketing/content/prompts/en/landing-page-seo-copy-prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "search-intent-classification-prompt",
+      "description": "Sort a keyword list by what the searcher wants and what page type each implies, reading intent from the results that currently rank and marking it unverified where nobody looked.",
+      "relatedSkill": "keyword-research",
+      "variables": [
+        "site_context",
+        "market_and_language",
+        "keyword_list",
+        "serp_observations"
+      ],
+      "file": "prompts/search-intent-classification-prompt/SKILL.md",
+      "chars": 5702,
+      "sha256": "29ec5c75d997dd0bbe5f5bb17714c8a39636c4fe6bf61f2f0b402c2ccb91040a",
+      "sourcePath": "apps/marketing/content/prompts/en/search-intent-classification-prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "seo-article-outline-prompt",
+      "description": "Turn a topic and its search intent into a section-by-section outline where every heading states what it proves, with unequal word budgets and an explicit cut list.",
+      "relatedSkill": "content-brief",
+      "variables": [
+        "topic_and_query",
+        "search_intent",
+        "available_evidence",
+        "word_budget",
+        "competing_pages"
+      ],
+      "file": "prompts/seo-article-outline-prompt/SKILL.md",
+      "chars": 5931,
+      "sha256": "3ae34575871832812e3528b52d38cfb55b69d2b185c8434aa1fd2ef29d80158d",
+      "sourcePath": "apps/marketing/content/prompts/en/seo-article-outline-prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "seo-blog-post-writing-prompt",
+      "description": "Turn a content brief into a full first draft that marks where first-hand evidence is needed instead of inventing statistics, customer names, or study citations.",
+      "relatedSkill": "content-brief",
+      "variables": [
+        "content_brief",
+        "target_reader",
+        "available_evidence",
+        "brand_voice",
+        "draft_length"
+      ],
+      "file": "prompts/seo-blog-post-writing-prompt/SKILL.md",
+      "chars": 6016,
+      "sha256": "4003877c7062e777a213ef3ecef056c417a5753bc5d938d77ab0f336ec69d1a7",
+      "sourcePath": "apps/marketing/content/prompts/en/seo-blog-post-writing-prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "seo-content-audit-prompt",
+      "description": "Sort an existing set of pages into keep, update, consolidate or retire, with a reason, a next action, and a named destination for every URL that comes down.",
+      "relatedSkill": "seo-audit",
+      "variables": [
+        "site_context",
+        "page_inventory",
+        "metrics_source",
+        "must_keep_pages",
+        "retirement_policy"
+      ],
+      "file": "prompts/seo-content-audit-prompt/SKILL.md",
+      "chars": 6245,
+      "sha256": "c4a17a753178386a54f22dac50930391561e74c0961ced33ecd9f1b858ad86a1",
+      "sourcePath": "apps/marketing/content/prompts/en/seo-content-audit-prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "seo-content-brief-prompt",
+      "description": "Turn one target query into the brief a writer can work from - the page's argument, the questions it must answer, the evidence each section needs, and what is out of scope.",
+      "relatedSkill": "content-brief",
+      "variables": [
+        "primary_query",
+        "reader_context",
+        "product_context",
+        "competing_pages",
+        "internal_pages"
+      ],
+      "file": "prompts/seo-content-brief-prompt/SKILL.md",
+      "chars": 5728,
+      "sha256": "01b23649cb2f5c10f4198ab38aff388039d9b2678634e03e9154c9e62927a58f",
+      "sourcePath": "apps/marketing/content/prompts/en/seo-content-brief-prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "seo-keyword-clustering-prompt",
+      "description": "Group a raw keyword list into topic clusters you can actually build pages around, with one page intent per cluster.",
+      "relatedSkill": "keyword-research",
+      "variables": [
+        "site_topic",
+        "target_user",
+        "keyword_list",
+        "existing_pages"
+      ],
+      "file": "prompts/seo-keyword-clustering-prompt/SKILL.md",
+      "chars": 3936,
+      "sha256": "d7b5fe443136565dde372eb659a9dd3af1d30ec9256451d0ed50c38fd2347d4a",
+      "sourcePath": "apps/marketing/content/prompts/en/seo-keyword-clustering-prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "serp-competitor-analysis-prompt",
+      "description": "Read the pages actually ranking for a query, get the requirements a page must meet to belong there, and a straight verdict on whether your site should target it at all.",
+      "relatedSkill": "seo-audit",
+      "variables": [
+        "target_query",
+        "our_site",
+        "ranking_pages",
+        "serp_features",
+        "our_page"
+      ],
+      "file": "prompts/serp-competitor-analysis-prompt/SKILL.md",
+      "chars": 6028,
+      "sha256": "ffe30a6ffc9cddba9481568ab86da0679af9b76c00f2687ed946cb2f248df35b",
+      "sourcePath": "apps/marketing/content/prompts/en/serp-competitor-analysis-prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "title-tag-meta-description-prompt",
+      "description": "Write title tags and meta descriptions for a batch of pages, checked for length, uniqueness across the batch, and accuracy to what each page actually contains.",
+      "relatedSkill": "on-page-seo",
+      "variables": [
+        "brand_name",
+        "page_inventory",
+        "current_tags",
+        "copy_constraints"
+      ],
+      "file": "prompts/title-tag-meta-description-prompt/SKILL.md",
+      "chars": 5556,
+      "sha256": "15c544c4b5b4d31a963914cb16de44b781f2a8a083dca73f6a79b5ff78b137c9",
+      "sourcePath": "apps/marketing/content/prompts/en/title-tag-meta-description-prompt.md"
+    },
+    {
+      "kind": "prompt",
+      "name": "topical-map-prompt",
+      "description": "Turn a subject into a hierarchy of pillar and supporting pages with internal links, an explicit out-of-scope list, and a page count that fits what your team can publish.",
+      "relatedSkill": "keyword-research",
+      "variables": [
+        "subject",
+        "business_offer",
+        "credibility_basis",
+        "page_budget",
+        "existing_pages"
+      ],
+      "file": "prompts/topical-map-prompt/SKILL.md",
+      "chars": 6178,
+      "sha256": "6b7c0832fc65a44482f32aa2b12614a2e8cf1dfdb3c1fda678d674465829b73b",
+      "sourcePath": "apps/marketing/content/prompts/en/topical-map-prompt.md"
+    }
+  ]
+}

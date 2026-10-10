@@ -1,0 +1,29 @@
+{
+  "name": "gengrowth-workbench-repo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "GenGrowth SEO/GEO workbench: a DSH Desktop plugin plus the API that runs its engines.",
+  "type": "module",
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=24.12"
+  },
+  "scripts": {
+    "sync:content": "node scripts/sync-content.mjs",
+    "vendor:engines": "node scripts/vendor-nevermore.mjs",
+    "test": "node --test plugin/test/*.test.mjs plugin-pick/test/*.test.mjs scripts/*.test.mjs && vitest run",
+    "pack:plugin": "node scripts/pack-plugin.mjs",
+    "pack:pick": "node scripts/pack-plugin.mjs plugin-pick",
+    "dev:api": "pnpm --filter @gg/api dev",
+    "dev:desktop": "node scripts/dev-desktop.mjs",
+    "test:unit": "node --test plugin/test/*.test.mjs plugin-pick/test/*.test.mjs scripts/*.test.mjs",
+    "test:vitest": "vitest run",
+    "typecheck": "pnpm --filter @gg/api typecheck",
+    "build:api": "pnpm --filter @gg/api build"
+  },
+  "devDependencies": {
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "vitest": "catalog:"
+  }
+}

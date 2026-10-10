@@ -1,0 +1,368 @@
+/**
+ * robots.txt parsing for the crawl adapter (spec §7.3). Vendor-copied and
+ * reshaped from the old `packages/crawler/src/robots.ts` + `ai-bots.ts`
+ * (commit 72af9300…), reshaped to `CrawlRobotsProjection`. The old repo's
+ * `@signalframe/core` `CrawlerAccessRule` type and the monitored-bot report are
+ * dropped; the projection records raw per-user-agent allow/disallow groups so a
+ * later WP3 rule can inspect AI-crawler access itself.
+ *
+ * Two consumers:
+ *  - `parseRobots` → the `CrawlRobotsProjection` persisted as an observation.
+ *  - `isPathAllowed` → the engine's own-crawler gate (longest-match, Allow wins
+ *    a specificity tie), applied to every BFS URL before it is fetched.
+ */
+
+import type { CrawlRobotsProjection } from "../observations.ts";
+
+/**
+ * AI-crawler user agents that MUST always be represented in the projection so a
+ * later rule can inspect their access (spec §7.3). Source: old `ai-bots.ts`.
+ */
+export const AI_BOT_USER_AGENTS = [
+  "OAI-SearchBot",
+  "ChatGPT-User",
+  "PerplexityBot",
+  "ClaudeBot",
+] as const;
+
+/** One parsed robots.txt group. Agent tokens are lowercased for matching. */
+export interface RobotsGroup {
+  readonly agents: readonly string[];
+  readonly allow: readonly string[];
+  readonly disallow: readonly string[];
+  /**
+   * Seconds the site asks a crawler to wait between requests, or null when the
+   * group states none. Not part of RFC 9309, but published widely enough that
+   * ignoring it means crawling a site faster than it asked to be crawled.
+   */
+  readonly crawlDelaySeconds: number | null;
+}
+
+interface MutableGroup {
+  agents: string[];
+  allow: string[];
+  disallow: string[];
+  crawlDelaySeconds: number | null;
+}
+
+/** Refuse to be paced slower than this; a hostile file could otherwise stall a run. */
+const MAX_HONOURED_CRAWL_DELAY_SECONDS = 30;
+
+function parseCrawlDelay(value: string): number | null {
+  const parsed = Number.parseFloat(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) return null;
+  return Math.min(parsed, MAX_HONOURED_CRAWL_DELAY_SECONDS);
+}
+
+function parseGroups(content: string): readonly RobotsGroup[] {
+  const groups: MutableGroup[] = [];
+  let current: MutableGroup | undefined;
+  let sawDirective = false;
+  for (const rawLine of content.split(/\r?\n/)) {
+    const line = rawLine.replace(/#.*/, "").trim();
+    if (!line) continue;
+    const separator = line.indexOf(":");
+    if (separator < 0) continue;
+    const name = line.slice(0, separator).trim().toLowerCase();
+    const value = line.slice(separator + 1).trim();
+    if (name === "user-agent") {
+      if (!current || sawDirective) {
+        current = {
+          agents: [],
+          allow: [],
+          disallow: [],
+          crawlDelaySeconds: null,
+        };
+        groups.push(current);
+        sawDirective = false;
+      }
+      current.agents.push(value.toLowerCase());
+    } else if ((name === "allow" || name === "disallow") && current) {
+      sawDirective = true;
+      if (value) current[name].push(value);
+    } else if (name === "crawl-delay" && current) {
+      sawDirective = true;
+      current.crawlDelaySeconds =
+        parseCrawlDelay(value) ?? current.crawlDelaySeconds;
+    }
+  }
+  return groups;
+}
+
+/** Product token used for matching: the part before "/" in a UA string. */
+function productToken(userAgent: string): string {
+  const slash = userAgent.indexOf("/");
+  return (slash >= 0 ? userAgent.slice(0, slash) : userAgent)
+    .trim()
+    .toLowerCase();
+}
+
+function groupForUserAgent(
+  groups: readonly RobotsGroup[],
+  userAgent: string,
+): RobotsGroup | undefined {
+  const token = productToken(userAgent);
+  return (
+    groups.find((group) => group.agents.includes(token)) ??
+    groups.find((group) => group.agents.includes("*"))
+  );
+}
+
+/**
+ * Every record naming this agent, merged.
+ *
+ * RFC 9309 §2.2.1: a crawler obeys the union of the records whose product
+ * token it matches. Taking only the first record silently drops the rules in a
+ * second block for the same agent — a shape that occurs whenever a site
+ * appends a rule rather than editing the existing group.
+ */
+function rulesForUserAgent(
+  groups: readonly RobotsGroup[],
+  userAgent: string,
+):
+  | { readonly allow: readonly string[]; readonly disallow: readonly string[] }
+  | undefined {
+  const token = productToken(userAgent);
+  const exact = groups.filter((group) => group.agents.includes(token));
+  const chosen = exact.length
+    ? exact
+    : groups.filter((group) => group.agents.includes("*"));
+  if (chosen.length === 0) return undefined;
+  return {
+    allow: chosen.flatMap((group) => group.allow),
+    disallow: chosen.flatMap((group) => group.disallow),
+  };
+}
+
+/**
+ * RFC 9309 2.2.2 pattern matching: `*` matches any run of characters and a
+ * trailing `$` anchors the end of the path.
+ *
+ * Matched by scanning rather than by compiling a regular expression. `*`
+ * becomes `.*`, and several of those against a path that does not match is the
+ * textbook shape for catastrophic backtracking: a forty-seven character
+ * Disallow line was measured at 58 seconds of CPU here, and the checker
+ * evaluates six user agents per run. A robots.txt belongs to the site being
+ * examined, so it is attacker-supplied input for any tool that reads one.
+ *
+ * Leftmost matching is complete for a pattern whose only metacharacter is `*`,
+ * so scanning gives the same answer in linear time. A trailing `$` is the one
+ * case that needs the final literal pinned to the end instead.
+ */
+/**
+ * Percent-escapes decoded where they decode cleanly.
+ *
+ * `URL.pathname` percent-encodes non-ASCII, while robots.txt carries whatever
+ * bytes the site wrote - usually the characters themselves. Comparing the two
+ * directly means a `Disallow: /博客/` never matches `/%E5%8D%9A%E5%AE%A2/`, so
+ * a site that closed a directory to AI crawlers is told nothing blocks them.
+ */
+function decodeForMatch(value: string): string {
+  if (!value.includes("%")) return value;
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+function globMatches(rawPath: string, rawPattern: string): boolean {
+  const path = decodeForMatch(rawPath);
+  const pattern = decodeForMatch(rawPattern);
+  const anchored = pattern.endsWith("$");
+  const body = anchored ? pattern.slice(0, -1) : pattern;
+  const segments = body.split("*");
+  const first = segments[0] ?? "";
+  if (!path.startsWith(first)) return false;
+  if (segments.length === 1) {
+    return anchored ? path.length === first.length : true;
+  }
+
+  let cursor = first.length;
+  for (let index = 1; index < segments.length; index += 1) {
+    const segment = segments[index] ?? "";
+    const last = index === segments.length - 1;
+    if (segment.length === 0) {
+      // A trailing `*`, anchored or not, matches whatever remains.
+      if (last) return true;
+      continue;
+    }
+    if (last && anchored) {
+      return path.length - segment.length >= cursor && path.endsWith(segment);
+    }
+    const at = path.indexOf(segment, cursor);
+    if (at < 0) return false;
+    cursor = at + segment.length;
+  }
+  return anchored ? cursor === path.length : true;
+}
+
+/**
+ * How specific a rule is, in URI path octets.
+ *
+ * RFC 9309 2.2.2 picks the rule matching the most octets, and gives an
+ * equally specific Allow priority over Disallow. A trailing `$` matches no
+ * octet at all, so counting it makes `Disallow: /x$` outrank `Allow: /x` and
+ * block a path both rules describe equally.
+ */
+function specificity(pattern: string): number {
+  return pattern.endsWith("$") ? pattern.length - 1 : pattern.length;
+}
+
+/** The directive that governs one path, and which pattern produced it. */
+export interface RobotsDecision {
+  readonly allowed: boolean;
+  /** The winning pattern, or null when no rule matched. */
+  readonly pattern: string | null;
+}
+
+/**
+ * Applies the RFC-style longest matching robots directive to one path. An
+ * equally specific Allow wins over Disallow. Empty content = fully allowed.
+ *
+ * Returns the winning pattern as well, because a checker that tells a site
+ * owner "disallowed" without naming the line cannot be acted on.
+ */
+export function matchRobotsRule(
+  groups: readonly RobotsGroup[],
+  userAgent: string,
+  path: string,
+): RobotsDecision {
+  const rules = rulesForUserAgent(groups, userAgent);
+  if (!rules) return { allowed: true, pattern: null };
+  const matches = [
+    ...rules.disallow
+      .filter(Boolean)
+      .filter((pattern) => globMatches(path, pattern))
+      .map((pattern) => ({ pattern, allowed: false })),
+    ...rules.allow
+      .filter(Boolean)
+      .filter((pattern) => globMatches(path, pattern))
+      .map((pattern) => ({ pattern, allowed: true })),
+  ];
+  if (matches.length === 0) return { allowed: true, pattern: null };
+  matches.sort(
+    (a, b) =>
+      specificity(b.pattern) - specificity(a.pattern) ||
+      Number(b.allowed) - Number(a.allowed),
+  );
+  const winner = matches[0];
+  return winner
+    ? { allowed: winner.allowed, pattern: winner.pattern }
+    : { allowed: true, pattern: null };
+}
+
+/**
+ * Boolean form of {@link matchRobotsRule}, used by the engine's own-crawler
+ * gate on every BFS URL before it is fetched.
+ */
+export function isPathAllowed(
+  groups: readonly RobotsGroup[],
+  userAgent: string,
+  path: string,
+): boolean {
+  return matchRobotsRule(groups, userAgent, path).allowed;
+}
+
+/**
+ * Seconds this crawler should wait between requests, per the site's own
+ * `Crawl-delay`. Returns 0 when the site states none. Resolution follows the
+ * same specificity rule as `isPathAllowed`: a group naming our product token
+ * wins over the `*` group.
+ */
+export function robotsCrawlDelaySeconds(
+  groups: readonly RobotsGroup[],
+  userAgent: string,
+): number {
+  return groupForUserAgent(groups, userAgent)?.crawlDelaySeconds ?? 0;
+}
+
+function projectionGroup(
+  group: RobotsGroup,
+  userAgent: string,
+): CrawlRobotsProjection["groups"][number] {
+  return {
+    userAgent,
+    disallow: [...group.disallow],
+    allow: [...group.allow],
+  };
+}
+
+function collectSitemapUrls(
+  content: string,
+  origin: string,
+): readonly string[] {
+  return [
+    ...new Set(
+      [...content.matchAll(/^\s*sitemap\s*:\s*(.+?)\s*$/gim)]
+        .map((match) => match[1]?.trim())
+        .filter((value): value is string => Boolean(value))
+        .flatMap((value) => {
+          try {
+            return [new URL(value, origin).href];
+          } catch {
+            return [];
+          }
+        }),
+    ),
+  ];
+}
+
+/**
+ * Parse robots.txt into a `CrawlRobotsProjection` plus the parsed groups the
+ * engine uses for its own-crawler gate. The projection groups preserve every
+ * user-agent token found in the file (first-appearance order) and additionally
+ * guarantee an entry for each required AI-crawler UA (resolved from its
+ * dedicated group, else the `*` group), so a rule can always inspect them.
+ */
+export function parseRobots(
+  content: string,
+  origin: string,
+  fetched: boolean,
+): {
+  readonly projection: CrawlRobotsProjection;
+  readonly groups: readonly RobotsGroup[];
+} {
+  const groups = parseGroups(content);
+  const projectionGroups: CrawlRobotsProjection["groups"][number][] = [];
+  const seenAgents = new Set<string>();
+
+  for (const group of groups) {
+    for (const agent of group.agents) {
+      if (seenAgents.has(agent)) continue;
+      seenAgents.add(agent);
+      projectionGroups.push(projectionGroup(group, agent));
+    }
+  }
+
+  const wildcard = groups.find((group) => group.agents.includes("*"));
+  for (const bot of AI_BOT_USER_AGENTS) {
+    const token = bot.toLowerCase();
+    if (seenAgents.has(token)) continue;
+    const dedicated = groups.find((group) => group.agents.includes(token));
+    const source = dedicated ?? wildcard;
+    seenAgents.add(token);
+    projectionGroups.push({
+      userAgent: bot,
+      disallow: source ? [...source.disallow] : [],
+      allow: source ? [...source.allow] : [],
+    });
+  }
+
+  return {
+    projection: {
+      fetched,
+      groups: projectionGroups,
+      sitemaps: collectSitemapUrls(content, origin),
+    },
+    groups,
+  };
+}
+
+/** The projection for a robots.txt that was never successfully fetched. */
+export function emptyRobots(): {
+  readonly projection: CrawlRobotsProjection;
+  readonly groups: readonly RobotsGroup[];
+} {
+  return parseRobots("", "", false);
+}
