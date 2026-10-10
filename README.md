@@ -69,7 +69,7 @@ pnpm dev:api
 
 ## 线上 API
 
-`apps/api` 部署在 Vercel 项目 `gengrowth-workbench-api`，生产地址是 `https://gengrowth-workbench-api.vercel.app`。所有接口都要带令牌。
+`apps/api` 部署在 Vercel 项目 `gengrowth-workbench-api`，生产地址是 `https://gengrowth-workbench-api.vercel.app`。所有接口都要带令牌。推送到 `main` 会自动部署到生产环境。
 
 项目设置存在 Vercel 里，不在仓库里。重建项目时照这张表填：
 

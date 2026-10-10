@@ -106,6 +106,7 @@ tool "gengrowth_workbench_status" returned invalid output: value is not lossless
 | GitHub 仓库 | 已创建，公开 | `phananhson733-oss/gengrowth-workbench`，`main` 分支。推送前在全部待提交文件里搜过凭据格式、内网地址、邮箱和本机路径，没有命中 |
 | Vercel 项目 | 已创建 | `gengrowth-workbench-api`：Root Directory `apps/api`，Next.js，Node 24.x，已连接上面的仓库 |
 | 生产部署 | 通过 | 从首个提交的干净克隆用 CLI 部署，状态 READY，地址 `https://gengrowth-workbench-api.vercel.app` |
+| 推送触发部署 | 通过 | 推送第二个提交 `a1c0fce` 到 `main` 后，Vercel 自动建了一次生产部署并变为 READY，GitHub 上该提交的 Vercel 检查为 success，生产域名切到新部署后 `/api/health` 仍是无令牌 401、带令牌 200 |
 | 生产域名可直接访问 | 通过 | 返回的是应用自己的 JSON，不是 Vercel 的登录页 |
 | 鉴权 | 通过 | `/api/health` 无令牌 401，错令牌 401，正确令牌 200；工具路由无令牌 401。所有响应体里都不含令牌 |
 | 输入防护 | 通过 | `http://127.0.0.1/`、`http://169.254.169.254/latest/meta-data/`、`https://example.com` 都返回 400 `invalid_url` |
