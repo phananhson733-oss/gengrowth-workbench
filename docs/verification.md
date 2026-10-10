@@ -97,7 +97,7 @@ tool "gengrowth_workbench_status" returned invalid output: value is not lossless
 
 ## 线上 API（Vercel，2026-10-10）
 
-仓库和 Vercel 项目在这一天创建。真实 DSH Desktop 数据目录里的 `api.json` 也在这一天按使用者的要求改成了线上地址，这是本项目唯一一次直接写真实数据目录。
+仓库和 Vercel 项目在这一天创建。真实 DSH Desktop 数据目录里的 `api.json` 也在这一天按使用者的要求改成了线上地址，改之前它指向本机 API（`http://127.0.0.1:3210`）。
 
 ### 已实测
 
