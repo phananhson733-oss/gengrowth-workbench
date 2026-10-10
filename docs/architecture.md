@@ -18,7 +18,7 @@ DSH Desktop 是 Electron 宿主，内部是打了 27 个补丁的 DeepSeek Harne
 
 API 默认拒绝服务：没有配置令牌时返回 503，不会变成「无需令牌」。
 
-DSH 自身不能部署到 Vercel。Harness 是一个长驻进程，状态存在本地磁盘（`DSH_HOME`），不是无服务器函数的形态。所以 Vercel 上放的是这个 API。
+DSH 自身不能部署到 Vercel。Harness 是一个长驻进程，状态存在本地磁盘（`DSH_HOME`），不是无服务器函数的形态。所以 Vercel 上放的是这个 API。2026-10-10 起它部署在 Vercel 项目 `gengrowth-workbench-api`，项目设置和连接方式见 [README](../README.md) 的「线上 API」。
 
 ## 3. 引擎代码原样拷贝，保留 `@sf/*` 包名
 
@@ -58,7 +58,7 @@ Desktop 安装插件时先装到一个临时的 generation 目录，那个目录
 
 ## 9. 工作台身份
 
-Desktop 用注册时的 GitHub 仓库地址推导工作台身份，取小写的 `owner/repository`。当前写的是 `phananhson733-oss/gengrowth-workbench`。仓库还没有创建。会话归属记在这个身份上，所以仓库改名或换 owner 之前要先定好名字。
+Desktop 用注册时的 GitHub 仓库地址推导工作台身份，取小写的 `owner/repository`。当前写的是 `phananhson733-oss/gengrowth-workbench`，仓库已在 2026-10-10 按这个名字创建。会话归属记在这个身份上，所以之后给仓库改名或换 owner，要同时考虑已有会话的归属。
 
 ## 10. 面板用自定义框架，为了能收起（实测）
 

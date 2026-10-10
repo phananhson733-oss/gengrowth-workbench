@@ -37,7 +37,7 @@
 - **模型加载技能，以及模型调用内链审计。** 模型调用状态工具已在真实 DSH Desktop 里验证通过，见「0.1.0 在真实会话里暴露的缺陷」一节。写入连接文件并启动本机 API 后，模型再次调用状态工具，返回 `configured: true`、`reachable: true` 和 API 上报的工具列表，说明真实应用里插件到 API 的连接是通的。还没有证据的是：模型加载一个 `gg-*` 技能后按它工作；由模型调用 `gengrowth_internal_link_audit` 完成一次审计。
 - **真实的 DSH Desktop 应用，部分完成。** 2026-10-10 使用者经「添加插件」把 0.1.0 装进了真实数据目录。只读核对的结果：generation 目录里 34 个文件与 tgz 逐字节一致；Profile 清单的 bundles 里有本插件；界面存储里出现了本工作台的注册记录，这条记录只会在客户端调用 `desktopWorkbenches.register` 后写入，说明客户端已在真实窗口里激活；安装后日志没有新的警告或错误。没有直接证据的部分：服务端的技能和工具注册只有「没有报错」这一条间接证据，面板的实际样子没有看过。
 - **`scripts/dev-desktop.mjs` 的安装路径和界面安装不同。** 脚本用命令行 `plugin add`，不经过 generation 机制。界面安装那条路径是单独手工验证的。
-- **Vercel 部署。** 没有创建 Vercel 项目，线上环境的超时和出口网络都没有测过。
+- **Vercel 部署。** 写这一节时还没有部署。2026-10-10 已部署并实测，见「线上 API」一节。
 - **Windows 和 Intel Mac。**
 - **有实际内链结构的站点。** 唯一一次真实抓取只有 1 页。
 
@@ -95,15 +95,42 @@ tool "gengrowth_workbench_status" returned invalid output: value is not lossless
 
 升级 Desktop 后要重新核对的宿主接口：自定义框架组件收到的 `service`、`entry`、`active`、`conversation` 四个属性；`service.getSnapshot()` 里的 `state.sessionBindings`、`state.active`、`ready`、`pending`；`service.currentSession()`、`defaultWorkspace()`、`workspaceVisible()`、`newSession()`、`newWorkspaceSession()`、`run()`；`service.ctx.sessions.list` 和 `service.ctx.workspaces.list`。对照物是 Desktop 安装包里 `dsh-desktop-workbenches/client.js` 的 `Frame` 函数。
 
+## 线上 API（Vercel，2026-10-10）
+
+仓库和 Vercel 项目在这一天创建。真实 DSH Desktop 数据目录里的 `api.json` 也在这一天按使用者的要求改成了线上地址，这是本项目唯一一次直接写真实数据目录。
+
+### 已实测
+
+| 项 | 结果 | 证据 |
+| --- | --- | --- |
+| GitHub 仓库 | 已创建，公开 | `phananhson733-oss/gengrowth-workbench`，`main` 分支。推送前在全部待提交文件里搜过凭据格式、内网地址、邮箱和本机路径，没有命中 |
+| Vercel 项目 | 已创建 | `gengrowth-workbench-api`：Root Directory `apps/api`，Next.js，Node 24.x，已连接上面的仓库 |
+| 生产部署 | 通过 | 从首个提交的干净克隆用 CLI 部署，状态 READY，地址 `https://gengrowth-workbench-api.vercel.app` |
+| 生产域名可直接访问 | 通过 | 返回的是应用自己的 JSON，不是 Vercel 的登录页 |
+| 鉴权 | 通过 | `/api/health` 无令牌 401，错令牌 401，正确令牌 200；工具路由无令牌 401。所有响应体里都不含令牌 |
+| 输入防护 | 通过 | `http://127.0.0.1/`、`http://169.254.169.254/latest/meta-data/`、`https://example.com` 都返回 400 `invalid_url` |
+| 线上引擎真实运行 | 通过 | 审计 `https://info.cern.ch`，2.7 秒返回 200，结果格式 `internal_link_audit.v3`，抓到 1 页。证明 Vercel 的出口网络可用，不证明结果丰富 |
+| 插件到线上 API | 通过 | 真实数据目录的 `api.json` 改成线上地址后，用插件自己的 `plugin/dsh/api-client.js` 读这个文件：`configured: true`、`reachable: true`，版本 0.1.0，工具 `internal-link-audit`。文件权限 600 |
+
+### 没有实测
+
+- **运行中的 DSH Desktop。** 上面那一行是插件的客户端模块在独立进程里读真实的 `api.json`，不是 Desktop 自己发出的请求。插件每次调用都重新读这个文件，按代码不需要重启，但没有在窗口里看过面板的显示，也没有让模型再调一次状态工具。
+- **模型经线上 API 完成一次内链审计。**
+- **预览部署。** `GG_API_TOKEN` 只配在 Production。按代码，预览环境的接口应该全部返回 503，没有实际访问过。
+- **耗时长的审计。** 工具路由的 `maxDuration` 是 300 秒。唯一一次线上抓取只有 1 页，没有接近过这个上限。
+- **更换线上令牌。** 步骤写在 README 的「线上 API」里，没有走过。
+
 ## 在真实 DSH Desktop 里验收
 
 这一步要在真实应用里由使用者操作。模型密钥只存在真实数据目录里，不复制到沙盒。
 
 1. 打包：`pnpm pack:plugin`，得到 `.dev/dist/gengrowth-workbench-<版本>.tgz`。
 2. 安装：DSH Desktop 左侧「插件」，右上角「添加插件」，填入 tgz 的完整路径，点「安装」。首次安装点「立即启用」即可，不需要重启。已装过旧版本时，装完要退出并重新打开 DSH Desktop。
-3. 验收一，工具调用，不依赖 API：新建会话，让模型调用 `gengrowth_workbench_status`。预期返回一段 JSON：`skills` 列表 8 项，`prompts` 列表 16 项，`api` 为 `{ configured: false, reason: "missing", reachable: false }`。这一步同时证明了插件激活、工具注册和模型调用工具。如果模型说没有这个工具，问题在预设对工具的可见性，不在安装：沙盒里只验证过工具已注册，没有验证过 `standard` 预设会把它交给模型。此时看 `/gg-` 能否列出 24 项，那是插件已加载的独立证据。
+3. 验收一，工具调用，不依赖 API：新建会话，让模型调用 `gengrowth_workbench_status`。预期返回一段 JSON：`skills` 列表 8 项，`prompts` 列表 16 项。`api` 一项取决于数据目录里有没有 `api.json`：没有时是 `{ configured: false, reason: "missing", reachable: false }`；已经连上线上 API 时是 `configured: true`、`reachable: true`，外加 API 上报的版本和工具列表。这一步同时证明了插件激活、工具注册和模型调用工具。如果模型说没有这个工具，问题在预设对工具的可见性，不在安装：沙盒里只验证过工具已注册，没有验证过 `standard` 预设会把它交给模型。此时看 `/gg-` 能否列出 24 项，那是插件已加载的独立证据。
 4. 验收二，技能加载：输入 `/gg-` 选一个技能，或者直接让模型使用 `gg-on-page-seo`。预期回答按技能里的步骤展开。不带前缀的 `/seo-audit` 仍然是 `~/.agents/skills` 里的第三方技能，不是本插件的。
-5. 验收三，引擎，可选：先把本地 API 的地址和令牌写进真实数据目录，再启动 API，然后让模型审计一个真实站点的内链。
+5. 验收三，引擎：让模型审计一个真实站点的内链。数据目录里的 `api.json` 现在指向线上 API，不需要在本机起服务。保留域名如 `example.com` 会被引擎拒绝，要用真实站点。
+
+   要改用本机 API 时，先把本机的地址和令牌写进真实数据目录，再启动 API：
 
    ```bash
    node scripts/dev-api-token.mjs --dsh-home "$HOME/Library/Application Support/dsh-desktop/harness"
@@ -113,7 +140,7 @@ tool "gengrowth_workbench_status" returned invalid output: value is not lossless
    pnpm dev:api
    ```
 
-   插件每次调用都重新读取 `api.json`，写入后不需要重启。保留域名如 `example.com` 会被引擎拒绝，要用真实站点。
+   插件每次调用都重新读取 `api.json`，写入后不需要重启。这条命令会覆盖 `api.json` 里线上的地址和令牌。线上令牌在 Vercel 里读不出来，所以想保留线上连接，就先把 `api.json` 另存一份（权限保持 600）再运行；没有备份的话，要再连线上只能换一个新令牌，步骤见 README 的「线上 API」。
 
 怎么确认结果：DSH Desktop 的日志只记录警告和错误，成功的调用不会留下日志行。证据是会话里出现工具卡片和结果，加上 `harness.log` 里没有 `gengrowth-workbench` 相关的报错。
 

@@ -10,7 +10,7 @@
 | --- | --- |
 | `plugin/` | DSH 插件，SEO/GEO 工作台本身：技能、prompt 模板、工具、面板 |
 | `plugin-pick/` | 第二个 DSH 插件，选剧台：只读查询 ggwork-deerflow 的选剧数据，见 [plugin-pick/README.md](plugin-pick/README.md) |
-| `apps/api/` | 工作台 API（Next.js，目标部署在 Vercel）：运行引擎，插件凭一个令牌调用它 |
+| `apps/api/` | 工作台 API（Next.js，部署在 Vercel）：运行引擎，插件凭一个令牌调用它 |
 | `vendor/nevermore/` | 从 nevermore 原样拷贝的引擎代码，脚本生成，不手改 |
 | `scripts/` | 同步、打包、本地沙盒脚本 |
 | `docs/` | 架构决策、实测记录、后续计划 |
@@ -66,6 +66,25 @@ node scripts/dev-desktop.mjs --plugins plugin,plugin-pick
 node scripts/dev-api-token.mjs --dsh-home ~/.cache/gengrowth-workbench/desktop-home/harness
 pnpm dev:api
 ```
+
+## 线上 API
+
+`apps/api` 部署在 Vercel 项目 `gengrowth-workbench-api`，生产地址是 `https://gengrowth-workbench-api.vercel.app`。所有接口都要带令牌。
+
+项目设置存在 Vercel 里，不在仓库里。重建项目时照这张表填：
+
+| 设置 | 值 |
+| --- | --- |
+| Root Directory | `apps/api` |
+| Framework | Next.js |
+| Node.js | 24.x |
+| 环境变量 | `GG_API_TOKEN`，至少 32 个字符，只配在 Production，类型选 Sensitive |
+
+预览部署没有配置令牌，接口一律返回 503。这是有意的：预览地址不应该能用生产令牌。
+
+插件连哪个 API，由 DSH 数据目录里的 `gengrowth-workbench/api.json` 决定，内容是 `{ "baseUrl": "…", "token": "…" }`，权限 600。插件每次调用都重新读这个文件，改完不需要重启 DSH Desktop。
+
+换线上令牌：在 Vercel 项目里替换 `GG_API_TOKEN`，重新部署生产环境（环境变量只对新部署生效），再把新令牌写进 `api.json`。Sensitive 类型的变量写入后读不出来，所以丢了令牌只能换新的。
 
 ## 装进 DSH Desktop
 
